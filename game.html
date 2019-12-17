@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>食物連鎖</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.min.js"></script>  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+  </head>
+
+  <body>
+  <h1>食物連鎖</h1>  
+  <div>
+    <div>あなたのID: <span id="myid"></span></div>
+    <div>ルームID: <span id="room"></span></div>
+    <div>リスくんを食べよう！</div>
+  </div>
+      
+  <script>
+    let room = "s1317243";
+    let socket = io.connect('https://qa.fujimura.com');    
+    let myid; 
+    let speedX = 0;
+    let speedY = 0;
+    let risu;
+    let mori;
+    let kitsune;
+    
+  
+    
+    document.querySelector("#room").innerHTML = room;
+    socket.on('mylogin', function(data) {
+      myid = data;
+      socket.emit('join', room); // 受信room IDを指定
+      document.querySelector("#myid").innerHTML = myid;
+      console.log("あなたのID: ", myid);
+    });
+            
+    socket.on('sensor', function(data) {
+      console.log(data);
+    });
+    
+</script>
+    
+<script>
+  
+  socket.on('sensor',function(data){
+    console.log(data.g);
+    speedX = 0.05*3*parseInt(data.g);
+    speedY = 0.05*3*parseInt(data.b);
+  });
+  
+  let x=0;
+  let y=0;
+  let targetX = 0;
+  let targetY = 0;
+  
+  function preload(){
+    risu = loadImage('gazou/animal_nihon_risu.png')
+    mori = loadImage('gazou/bg_yamamichi.jpg')
+    kitsune = loadImage('gazou/animal_fox_kitsune.png')
+  }
+    
+    function setup() {
+  createCanvas(640,480);
+  background(200);
+  x = width/2;
+  y = height/2;
+      
+    targetX = random(width-10);
+    targetY = random(height-20);
+}
+
+/*parseInt("data.a",10);
+parseInt("data.b",10);*/
+
+  //ここに数字を定義する
+  
+function draw() {
+  background(200);
+    image(mori,0,0,width,height);
+  x = x + speedX;
+  y = y + speedY;
+  
+  if(x>width) x = width;
+  if(x<0) x=0;
+  
+  if(y>height) y = height;
+  if(y<0) y=0;
+    
+  let distance = Math.sqrt(Math.pow(x-targetX,2)+Math.pow(y-targetY,2));
+  console.log(distance);
+  if(distance < 50) background(255,0,0);
+  
+  image(risu,targetX,targetY,50,50);
+  
+  image(kitsune,x,y,100,100);
+}
+      
+</script>
+    
+</body>
+</html>
+
+<script>
+    /*<div>あなたのID: <span id="myid"></span></div>
+    <div>ルームID: <span id="room"></span></div>
+    <div>受信した情報はコンソールログで確認してください</div>*/
+</script>
